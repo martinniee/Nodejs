@@ -74,3 +74,62 @@ nvm use <版本>
 - `ECMAScript`：nodejs 和 javascript 都具有
 - `DOM，BOM`：仅浏览器环境具有，js 有，而 nodejs 不具有
 
+---
+
+## 同步和异步
+
+**1，进程和线程**
+
+- 进程：程序的运行环境（理解为工厂的仓库）
+- 线程：是实际运行程序的”东西“（理解为工人）
+
+**2，同步和异步**
+
+同步
+
+- 同步代码会出现 **堵塞** 现象（自上而下，先后执行），会影响 **整体程序** 的执行
+- 解决同步问题：其他语言（java，python）采取**多线程**解决 ； nodejs是**单线程**，使用 **异步**方式 解决
+
+异步
+
+- 某段代码不会影响其他代码的执行
+- **异步的问题**：异步代码无法使用 `return`设置返回值。因为 `return`是立即返回，但是异步带啊吗不需要立即返回。
+- **特点**：（1）不会发生阻塞其他的代码的现象 ；  （2）需要使用**回调函数**返回值
+- 基于回调的异步实现（回调地狱） ：（1）代码可读性差 ； （2）可调试性差
+- 解决回调地狱：思路——需要代替回调地狱返回值，引出` promise`
+
+```javascript
+// 下面三行代码是 同步执行，依次一行一行执行
+console.log("111");
+console.log("222");
+console.log("333");
+// 下面的代码，sum函数调用会影响下一行语句的执行
+function sum(a, b, callback) {
+    const begin = Date.now();
+    setTimeout(() => {
+        callback(a + b);
+    }, 4000);
+}
+console.log("1111111");
+// 使用回调函数
+// 理解回调函数的作用：暂时储存某个封装的指令，等待合适时机执行
+const result = sum(123, 456, (result) => {
+    sum(result, 777, (result) => {
+        sum(result, 888, (result) => {
+            sum(result, 999, (result) => {
+                sum(result, 000, (result) => {
+                    console.log(result);
+                })
+            })
+        })
+    })
+});
+console.log("2222222");
+```
+
+回调地狱的结构图：
+
+![image-20230521130651648](assets/README-images/image-20230521130651648.png)
+
+---
+
