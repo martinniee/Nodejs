@@ -11,7 +11,7 @@
 > 源码：链接：https://pan.baidu.com/s/1jE10ooFCzpV6ddSqHyYJow?pwd=9658
 > 提取码：9658
 >
-> 学习目标：争取 1~2 周内搞定，提升效率
+> 学习目标：争取 1~2 周内搞定，提升效率，2023/5/20 ~ 
 >
 > 李立超博客（nodejs 配套笔记）：https://www.lilichao.com/index.php/2022/10/08/node-js%e7%ae%80%e4%bb%8b%e5%ae%89%e8%a3%85/
 
@@ -67,7 +67,7 @@ nvm use <版本>
 
 方式 3：在 VScode 中使用命令行（bash）执行代码。
 
-方式 4：在 VScode 中的 打开的`demo.js`文件中按 `F5`会弹出选项，选择 `node 执行代码。
+方式 4：在 VScode 中的 打开的`demo.js`文件中按 `F5`会弹出选项，选择 `node`执行代码。
 
 **5，nodejs 和 javascript 的区别**
 
@@ -272,3 +272,140 @@ promise2.finally(() => {
 })
 ```
 
+
+
+## promise详解
+
+1，将 回调函数地狱的异步代码 修改 为 使用 promise
+
+```javascript
+// -----------------1. 使用回调(地狱)的方式-----------------
+function sum(a, b, cb) {
+    // setTimeout 中是异步代码
+    setTimeout(() => {
+        cb(a + b)
+    }, 1000);
+} 
+// -----------------2. 使用 promise 的方式-----------------
+function sum(a, b) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(a + b)
+        }, 1000);
+    })
+}
+```
+
+2，then ，catch的使用
+
+```javascript
+/*
+promise中的 then，catch这三个方法都会返回一个新的Promise
+- then 中的 return 返回的内容作为新的 promise.then 回调中的数据（then 中 return的数据是下一次 then 中的参数）
+ */
+// const promise = sum(1, 2);
+
+const promise = new Promise((resolve, reject) => {
+    reject('我是返回值')
+})
+/**
+ * then 和 catch 
+ * - then  用来处理 resolve 的操作，接受 成功情况下的返回值。resolve 遇到 catch从中会忽略
+ * - catch 用来处理 reject  的操作，接受 失败情况下的返回值。reject  遇到 then 从中会忽略
+ * - 如果 某个 catch 中 有错，则自身不处理，由后续处理。因此建议在最后使用 catch 以便可以处理所有错误。
+ */
+promise
+    .then(r => '嘿嘿')
+    .catch(r => {
+        throw new Error("报个错玩")
+        console.log('嘿嘿')
+    }
+    )
+    .then(r => console.log('嘿嘿嘿'))
+    .catch(r => console.log(""))
+// 说明：then 中的 return 返回的内容作为新的 promise.then 回调中的数据
+ promise.
+    then(result => {
+        console.log(`result1: ${result}`);
+        return result + 3;
+    })
+    .then(result => {
+        console.log(`result2: ${result}`);
+        return result + 4;
+    })
+    .then(result => {
+        console.log(`result3: ${result}`);
+        return result + 5;
+    })
+```
+
+3，Promise静态方法
+
+```javascript
+/**
+ * 静态方法：
+ *  - Promise.resolve() 创建立即 完成 的 promise
+ *  - Promise.reject()  创建立即 拒绝 的 promise
+ *  - Promise.all([...]) 同时返回多个 promise 的执行结果。”同生共死“，全部成功才成功，一个失败都失败（ a & b 为 真  ）
+ *  - Promise.allSettled([...])  同时返回多个 promise 的执行结果。无论成功或失败
+ *      {status: 'fulfilled', value: 579}
+ *      {status: 'reject', reason: 579}
+ *  - Promise.race([...]) 返回执行结果最快的 promise （不考虑成功失败）
+ *  - Promise.any([...]) 返回执行结果最快的成功（resolve） 的promise 。都失败才失败 （ a | b  为 假 ）
+ * 
+ */
+Promise.resolve(10)
+// 等价
+new Promise((resolve,reject)=>{
+    resolve(10)
+})
+```
+
+```javascript
+function sum(a, b) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(a + b)
+        }, 1000);
+    })
+}
+// -----------------1. Promise.all-----------------
+Promise.all([
+    sum(1, 3),
+    sum(10, 20),
+    sum(55, 66),
+]).then(r => {
+    console.log("r: ", r); // r:  (3) [4, 30, 121]
+}) 
+// -----------------2. Promise.allSettled-----------------
+Promise.allSettled([
+    sum(1, 3),
+    sum(10, 20),
+    Promise.reject('哈哈，出错了！'),
+    sum(55, 66),
+]).then(r => {
+    console.log("r: ", r); // r:  (3) [4, 30, 121]
+}) 
+// -----------------3. Promise.race-----------------
+Promise.race([
+    Promise.reject('哈哈，出错了！'),
+    sum(1, 3),
+    sum(10, 20),
+    sum(55, 66),
+]).then(r => {
+    console.log("r: ", r); // r:  (3) [4, 30, 121]
+}) 
+// -----------------4. Promise.race-----------------
+Promise.any([
+    Promise.reject('哈哈，出错1了！'),
+    Promise.reject('哈哈，出错1了！'),
+    Promise.reject('哈哈，出错1了！'),
+]).then(r => {
+    console.log("r: ", r); // r:  (3) [4, 30, 121]
+})
+```
+
+- all：all (resolve) ,then  resolve
+- any：any (resolve),  then resolve
+
+- 'all', 'or' stands for the condition leading result to be successful
