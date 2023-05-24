@@ -770,3 +770,90 @@ async 使用范围
     - 1）Html的 使用` type="mudule` 属性 script 标签中
     - 2）`.mjs`文件中
 
+
+
+## CommonJS规范
+
+1，NodeJS中支持的 模块化规范
+
+1.  CommonJS 是 JS 中的模块化规范（第三方）。在 NodeJS是默认的模块化规范
+
+
+
+2， CommonJS模块化规范（引入模块）
+
+- 使用` require("<模块的路径>")`格式，引入自定义模块时，路径要以 ./ 或 ../开头
+- **扩展名可以省略**: 在CommonJS中，如果省略的js文件的扩展名 node,会自动为文件补全扩展名。
+如 `./m1.js`,如果没有js,它会寻找`./m1.json`（优先级：js < json > node）
+js-->json->node（特殊）)   
+- 如引入核心模块，可直接写模块名，或在核心模块前添加 `node:`
+
+```javascript
+const m1 = require('./m1') // 引入m1模块。省略扩展名称
+const m2 = require('./m2.cjs') // 引入 CommonJS标准模块
+const hello = require('./hello') // 引入文件夹 hello
+```
+
+```javascript
+// m2.cjs
+//cjs为扩展名，表示是一个CommonJS标准的模块
+exports.a = "hh"
+```
+
+```javascript
+// hello/index.js
+require('./a')
+require('./b')
+require('./c')
+// 当以文件夹为模块时，默认以 index.js 作为入口文件
+console.log("index.js");
+```
+
+
+
+3，定义模块
+
+在定义模块时，模块中的内容`默认`是不能被外部看到的，可以通过`exports`来设置要向外部暴露的内容
+
+访问`exports`的方式有两种：
+1. exports
+2. module.exports（默认）
+
+   - 当我们在其他模块中引入当前模块时，`require`函数返回的就是`exports`
+
+   - 使用 exports 的方式
+       - 方式1：使用 exports 分别导出数据
+       - 方式2：使用 module.exports 将数据封装到对象中一次性导出
+
+```javascript
+// 使用 exports 分别导出数据
+exports.a = 'foo'
+exports.b = 'bar'
+exports.c = 'baz'
+// 使用 module.exports 将数据封装到对象中一次性导出
+module.exports = {
+    a: 'hh',
+    b: [1, 2, 3, 4],
+    c: () => {
+        console.log(111);
+    },
+}
+```
+
+4，原理
+
+```javascript
+/*
+所有的CommonJS的模块都会被包装到一个函数中
+    (function(exports,require,module,__filename,__dirname){
+
+    });
+*/
+let a = 10
+let b = 20
+// 证明
+// console.log(arguments);
+console.log(__filename); // 表示当前模块的绝对路径
+console.log(__dirname); // 表示当前模块就所在目录的路径
+```
+
