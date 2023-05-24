@@ -563,3 +563,84 @@ mp.then((result) => {
 两种情况的示意图：
 
 ![image-20230524154536930](assets/README-images/image-20230524154536930.png)
+
+## 手写 promise 下
+
+```javascript
+/**
+ * 解决的问题
+ * 1.解决不能多次调用then （已解决）
+ * 2.解决不能链式调用then （已解决）
+ */
+const PROMISE_STATE = {
+	PENDING: 0,
+	FULFILLED: 1,
+	REJECTED: 2,
+};
+class MyPromise {
+	#result;
+	#state = PROMISE_STATE.PENDING;
+	#callbacks = []; // 创建 callbacks 储存所有的调用的回调函数  👈
+	constructor(executor) {
+		executor(this.#resolve.bind(this), this.#reject.bind(this)); // 调用回调函数
+	}
+	#resolve(value) {
+		if (this.#state === PROMISE_STATE.FULFILLED) return;
+		this.#result = value; // this 为 undefine
+		this.#state = PROMISE_STATE.FULFILLED;
+		queueMicrotask(() => {
+			// 调用 callbacks 中的所有函数 👈
+			this.#callbacks.forEach((cb) => {
+				cb();
+			});
+		});
+	}
+	#reject(reason) {}
+	then(onFulfilled, onRejected) {
+		/**
+		 * 返回一个新的 promise 用于 下一次 then 调用  👈
+		 */
+		return new MyPromise((resolve, reject) => {
+			if (this.#state == PROMISE_STATE.PENDING) {
+				// this.#callback = onFulfilled
+				this.#callbacks.push(() => {
+					resolve(onFulfilled(this.#result)); // 将当前的 promise返回结果作为下一次的 resolve的传入的值  👈
+				});
+			}
+			// 当获取了数据，才返回数据
+			else if (this.#state === PROMISE_STATE.FULFILLED) {
+				queueMicrotask(() => {
+					resolve(onFulfilled(this.#result)); // 将当前的 promise返回结果作为下一次的 resolve的传入的值  👈
+				});
+			}
+		});
+	}
+}
+const mp = new MyPromise((resolve, reject) => {
+	setTimeout(() => {
+		resolve("foo");
+	}, 1000);
+	// resolve('foo')
+});
+/* mp.then((result) => {
+    console.log("result1: ", result); // foo
+})
+mp.then((result) => {
+    console.log("result2: ", result); // foo
+})
+mp.then((result) => {
+    console.log("result3: ", result); // foo
+}) */
+mp.then((result) => {
+	console.log("result1: ", result); // foo
+	return "111";
+})
+	.then((result) => {
+		console.log("result2: ", result); // foo
+		return "222";
+	})
+	.then((result) => {
+		console.log("result3: ", result); // foo
+		return "333";
+	});
+```
