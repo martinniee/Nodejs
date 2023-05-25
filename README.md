@@ -857,3 +857,70 @@ console.log(__filename); // 表示当前模块的绝对路径
 console.log(__dirname); // 表示当前模块就所在目录的路径
 ```
 
+## ES模块化规范
+
+CommonJS导入导出
+
+（1）导出
+
+```javascript
+module.exports = {
+    name: "foo",
+    age: 18,
+    gender: "男"
+}
+```
+
+（2）导入
+
+```javascript
+// -----------------引入部分方式1：直接获取目标属性-----------------
+const name = require('./m3').name
+console.log(name);
+// -----------------引入部分方式2：类似对象解构赋值-----------------
+const { name, age, gender } = require('./m3')
+console.log(name, age, gender);
+```
+
+ES模块化导入导出
+
+（1）导出
+
+```javascript
+/* ES 模块化 */
+// 1. 向外部导出内容
+export let a = 10
+export const b = 'foo'
+export const c = { name: "bar" }
+
+// 2. 设置默认导出
+// 格式：export default <值>
+export default function sum(a, b) {
+    return a + b
+}
+```
+
+（2）导入
+
+```javascript
+/* 导入 m4模块。es模块不能省略扩展名（官方标准） */
+// ----------导入方式1：对象解构----------
+import { a, b, c } from "./m4.mjs"
+// ----------导入方式2：对象解构取别名----------
+import { a as haha, b as xixi, c as heihei } from "./m4.mjs"
+// ----------导入方式3：引入所有（开发时避免使用此方式）----------
+import * as m4 from "./m4.mjs"
+// ----------导入方式4：引入 默认导出。默认导出的内容可随意命名----------
+import sum from "./m4.mjs"
+```
+
+默认在Nodejs中的模块化标准是 CommonJS。采用 ES模块化的方式（两种）
+1. 使用 `.mjs` 作为扩展名
+2. 设置 `package.json` 的 type 属性为 'module`。设置后，则项目的js采用的都是 ES 模块化规范。
+
+ES模块化说明
+
+- 通过 ES 模块化，导入的内容都是**常量**
+- ES模块都是运行在**严格模式**下的
+- ES模块化，在浏览器中同样支持，但是通常我们不会直接使用，通常都会结合打包工具使用
+
