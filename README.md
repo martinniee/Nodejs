@@ -1118,3 +1118,80 @@ fs.rename(
 })
 ```
 
+## npm
+
+node中的包管理器叫做npm(node package manage),npm是世界最大的包管理库，作为开发人员，我们可以将自己开发的包上传到npm中共别人使用，也可以直接从npm中下载别人开发好的包，在自家项目中使用。
+
+npm网站：https://www.npmjs.com/
+
+
+
+### package.json
+
+格式规范
+
+- 需符合json格式，key使用双引号
+
+- name ：可包含小写字母，`_`和`-`。
+
+npm相关命令
+
+```bash
+# 初始化项目 package.json。在被视为项目的文件夹的根目录执行命令初始化项目
+npm init
+# 表示选择默认配置
+npm init -y
+# 在当前项目安装依赖包
+npm install <package name>
+# 卸载当前项目的依赖包
+npm uninstall <package name>
+# 全局安装依赖包
+npm install <package name> -g
+# 卸载全局安装的依赖包
+npm uninstall <package name>  -g
+```
+
+执行npm install命令后产生的变化
+
+- 将安装的依赖包下载到 `node_modules`目录下
+- 会在 `package.json`中的`dependencies`属性中添加依赖包的配置
+- 会自动添加`package-lock.json`文件，助于加速下载依赖包
+
+package.json中的版本约束
+
+```bash
+^x.y.z # 表示匹配X.开始的所有版本
+~x.y.z # 表示匹配x.y开始的所有版本
+*      # 匹配最新版本
+```
+
+ ```javascript
+ /*
+ 安装方式
+ - 本地安装：在当前项目下安装下载依赖包
+ - 全局安装：在当前设备下安装下载依赖包
+  */
+ // 引入 从 npm 下载的依赖包
+ const _ = require("lodash")
+ console.log(_);
+ ```
+
+package.json中的属性scripts
+- 由键值对构成，键是名称，值是指令。可理解为为命令起别名。
+- 如 `"test":"dir"`，当运行`npm test`，相当于在命令行执行 `dir`命令。可自定义命令。
+- 如果键是非`test`,`start`，则运行自定义命令需要通过 `run`来执行。如 `"hello":"dir"`，运行需要添加`run`变为`npm run hello`。
+
+### npm镜像
+
+npm的仓管的服务器位于国外，有时候并不是那么的好使为了解决这个问题，可以在npm中配置一个镜像服务器
+
+```bash
+# 方式1（不推荐）：配置 cnpm
+npm install -g cnpm --registry=https://registry.npmmirror.com
+# 方式2（推荐） 彻底修改 npm 仓库地址
+npm set registry https://registry.npmmirror.com
+# 还原到原版下载源
+npm config delete registry
+# 查看当前项目配置
+npm config get registry
+```
