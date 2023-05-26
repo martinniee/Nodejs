@@ -1195,3 +1195,19 @@ npm config delete registry
 # 查看当前项目配置
 npm config get registry
 ```
+
+
+
+## yarn
+
+```bash
+# ----------方式1----------
+# 全局安装 yarn
+npm i yarn -g
+# 全局卸载 yarn
+npm uninstall yarn -g
+# ----------方式2----------
+# 启用 corepack enable
+corepack enable
+```
+
