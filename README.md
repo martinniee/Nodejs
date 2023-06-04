@@ -11,7 +11,7 @@
 > 源码：链接：https://pan.baidu.com/s/1jE10ooFCzpV6ddSqHyYJow?pwd=9658
 > 提取码：9658
 >
-> 学习目标：争取 1~2 周内搞定，提升效率，2023/5/20 ~
+> 学习目标：争取 1~2 周内搞定，提升效率，2023/5/20 ~ 2023/5/26
 >
 > 李立超博客（nodejs 配套笔记）：https://www.lilichao.com/index.php/2022/10/08/node-js%e7%ae%80%e4%bb%8b%e5%ae%89%e8%a3%85/
 
